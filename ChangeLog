@@ -1,5 +1,8 @@
 2015-05-11  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/unix/sysv/linux/x86_64/librt-cancellation.S: Remove file.
+	* sysdeps/unix/sysv/linux/x86_64/pthread_cond_timedwait.S: Remove
+
 	* sysdeps/unix/sysv/linux/i386/Makefile [$(subdir) = misc)]: Remove
 	call_pselect6 object.
 	[$(subdir) = io]: Remove call_sync_file_range object.
