@@ -35,14 +35,13 @@ static __always_inline int
 futex_abstimed_wait (unsigned int* futex, unsigned int expected,
 		     const struct timespec* abstime, int private, bool cancel)
 {
-  int err, oldtype;
+  int err;
   if (abstime == NULL)
     {
       if (cancel)
-	oldtype = __pthread_enable_asynccancel ();
-      err = lll_futex_wait (futex, expected, private);
-      if (cancel)
-	__pthread_disable_asynccancel (oldtype);
+	err = lll_futex_wait_cancel (futex, expected, private);
+      else
+	err = lll_futex_wait (futex, expected, private);
     }
   else
     {
@@ -78,16 +77,15 @@ futex_abstimed_wait (unsigned int* futex, unsigned int expected,
       rt.tv_nsec = nsec;
 #endif
       if (cancel)
-	oldtype = __pthread_enable_asynccancel ();
+
 #if (defined __ASSUME_FUTEX_CLOCK_REALTIME	\
      && defined lll_futex_timed_wait_bitset)
-      err = lll_futex_timed_wait_bitset (futex, expected, abstime,
-					 FUTEX_CLOCK_REALTIME, private);
+      err = lll_futex_timed_wait_bitset_cancel (futex, expected, abstime,
+						FUTEX_CLOCK_REALTIME,
+						private);
 #else
-      err = lll_futex_timed_wait (futex, expected, &rt, private);
+      err = lll_futex_timed_wait_cancel (futex, expected, &rt, private);
 #endif
-      if (cancel)
-	__pthread_disable_asynccancel (oldtype);
     }
   switch (err)
     {
