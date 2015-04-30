@@ -25,6 +25,7 @@
    We cannot use an enum here because the values are used in assembler
    code.  */
 
+#define SOCKOP_invalid		-1
 #define SOCKOP_socket		1
 #define SOCKOP_bind		2
 #define SOCKOP_connect		3
@@ -45,5 +46,39 @@
 #define SOCKOP_accept4		18
 #define SOCKOP_recvmmsg		19
 #define SOCKOP_sendmmsg		20
+
+#define SOCKETCALL(name, __a1, __a2, __a3, __a4, __a5, __a6)		\
+  ({									\
+    long int __args[6] = { (long int) __a1,				\
+                           (long int) __a2,				\
+                           (long int) __a3,				\
+                           (long int) __a4,				\
+                           (long int) __a5,				\
+                           (long int) __a6 };				\
+    long int sc_ret = INLINE_SYSCALL (socketcall, 2, SOCKOP_##name,	\
+                                     __args);				\
+    sc_ret;								\
+  })
+
+#if IS_IN (libc)
+# define __pthread_enable_asynccancel  __libc_enable_asynccancel
+# define __pthread_disable_asynccancel __libc_disable_asynccancel
+#endif
+
+#define SOCKETCALL_CANCEL(name, __a1, __a2, __a3, __a4, __a5, __a6)	\
+  ({									\
+    long int __args[6] = { (long int) __a1,				\
+                           (long int) __a2,				\
+                           (long int) __a3,				\
+                           (long int) __a4,				\
+                           (long int) __a5,				\
+                           (long int) __a6 };				\
+    int oldtype = LIBC_CANCEL_ASYNC ();					\
+    long int sc_ret = INLINE_SYSCALL (socketcall, 2, SOCKOP_##name,	\
+                                     __args);				\
+    LIBC_CANCEL_RESET (oldtype);					\
+    sc_ret;								\
+  })
+
 
 #endif /* sys/socketcall.h */

@@ -46,7 +46,7 @@ check_may_shrink_heap (void)
 				  O_RDONLY | O_CLOEXEC);
       if (fd >= 0)
 	{
-	  char val;
+	  char val = 0;
 	  ssize_t n = read_not_cancel (fd, &val, 1);
 	  may_shrink_heap = n > 0 && val == '2';
 	  close_not_cancel_no_status (fd);
