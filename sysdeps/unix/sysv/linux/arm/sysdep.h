@@ -387,6 +387,14 @@ __local_syscall_error:						\
 #undef INTERNAL_SYSCALL_ERRNO
 #define INTERNAL_SYSCALL_ERRNO(val, err)	(-(val))
 
+#undef SYSCALL_CANCEL_ERROR
+#define SYSCALL_CANCEL_ERROR(__val) \
+  ((unsigned int) (__val) >= 0xfffff001u)
+
+#undef SYSCALL_CANCEL_ERRNO
+#define SYSCALL_CANCEL_ERRNO(__val) \
+  (-(__val))
+
 #define LOAD_ARGS_0()
 #define ASM_ARGS_0
 #define LOAD_ARGS_1(a1)				\
